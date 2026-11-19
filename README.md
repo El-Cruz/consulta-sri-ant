@@ -29,7 +29,7 @@ UPSTASH_REDIS_REST_TOKEN=tu-token
 cd backend
 .\mvnw.cmd spring-boot:run
 ```
-API disponible en `http://localhost:8080`.
+API disponible en `http://localhost:8081`.
 
 ### 3. Frontend (React + Vite)
 ```powershell
