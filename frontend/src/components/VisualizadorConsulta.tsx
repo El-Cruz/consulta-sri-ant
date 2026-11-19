@@ -1,4 +1,3 @@
-import { useState, type FormEvent } from 'react'
 import type { ContribuyenteResponse, LicenciaResponse, VehiculoResponse } from '../types'
 
 interface VisualizadorConsultaProps {
@@ -7,11 +6,9 @@ interface VisualizadorConsultaProps {
   licencia: LicenciaResponse | null
   licenciaError: string | null
   cargandoLicencia: boolean
-  cedulaActual: string
   onConsultarDesdeCache: () => void
   onForzarAntVivo: () => void
   onSimularCaidaAnt: () => void
-  onGuardarCacheDemo: (datos: { nombreConductor: string; puntos: number; totalCitaciones: number }) => Promise<void>
 }
 
 /**
@@ -23,29 +20,10 @@ export function VisualizadorConsulta({
   licencia,
   licenciaError,
   cargandoLicencia,
-  cedulaActual,
   onConsultarDesdeCache,
   onForzarAntVivo,
   onSimularCaidaAnt,
-  onGuardarCacheDemo,
 }: VisualizadorConsultaProps) {
-  const [seedPuntos, setSeedPuntos] = useState(28)
-  const [seedCitaciones, setSeedCitaciones] = useState(1)
-  const [guardandoSeed, setGuardandoSeed] = useState(false)
-
-  const handleSeedSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setGuardandoSeed(true)
-    try {
-      await onGuardarCacheDemo({
-        nombreConductor: contribuyente?.razonSocial || `CONDUCTOR ${cedulaActual}`,
-        puntos: seedPuntos,
-        totalCitaciones: seedCitaciones,
-      })
-    } finally {
-      setGuardandoSeed(false)
-    }
-  }
 
   const getBadgeStyle = (fuente: string) => {
     if (fuente === 'ANT_ONLINE') return { className: 'badge-online', label: 'ANT EN VIVO' }
@@ -171,43 +149,8 @@ export function VisualizadorConsulta({
           )}
 
           {licenciaError && (
-            <div className="ant-fallback-box">
-              <div className="alert alert-warn" role="status">
-                <strong>Portal ANT sin disponibilidad:</strong> {licenciaError}
-              </div>
-
-              {cedulaActual && (
-                <form onSubmit={handleSeedSubmit} className="seed-form">
-                  <p className="muted">
-                    Registrar respuesta válida en caché para <code>{cedulaActual}</code>:
-                  </p>
-                  <div className="seed-inputs">
-                    <label>
-                      Puntos
-                      <input
-                        type="number"
-                        min={0}
-                        max={30}
-                        value={seedPuntos}
-                        onChange={(e) => setSeedPuntos(Number(e.target.value))}
-                      />
-                    </label>
-                    <label>
-                      Citaciones
-                      <input
-                        type="number"
-                        min={0}
-                        max={50}
-                        value={seedCitaciones}
-                        onChange={(e) => setSeedCitaciones(Number(e.target.value))}
-                      />
-                    </label>
-                    <button type="submit" className="btn btn-primary btn-sm" disabled={guardandoSeed}>
-                      {guardandoSeed ? 'Guardando...' : 'Guardar en Caché'}
-                    </button>
-                  </div>
-                </form>
-              )}
+            <div className="alert alert-warn" role="status">
+              {licenciaError}
             </div>
           )}
         </article>

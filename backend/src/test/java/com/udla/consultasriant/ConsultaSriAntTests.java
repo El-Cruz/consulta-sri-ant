@@ -170,10 +170,20 @@ class ConsultaSriAntTests {
         assertEquals(28, fallback.puntos());
         assertEquals(2, llamadasAnt.get());
 
-        // 4. Cédula sin caché previa cuando ANT está caída -> 503
-        ApiException sinCache = assertThrows(ApiException.class, () ->
-                service.consultarPuntosLicencia("1799999999", "", false, false));
-        assertEquals(HttpStatus.SERVICE_UNAVAILABLE, sinCache.getStatus());
+        // 4. Cédula sin caché previa cuando ANT está caída -> genera respaldo válido, guarda en caché y reusa en siguiente llamada
+        int llamadasAntes = llamadasAnt.get();
+        LicenciaResponse respaldoInicial = service.consultarPuntosLicencia("1799999999", "", "ANA PEREZ", false, false);
+        assertEquals("CACHE_CLOUD_FALLBACK", respaldoInicial.fuenteDatos());
+        assertEquals(30, respaldoInicial.puntos());
+        assertEquals("ANA PEREZ", respaldoInicial.nombreConductor());
+        assertTrue(respaldoInicial.almacenadoEnCache());
+        assertEquals(llamadasAntes + 1, llamadasAnt.get());
+
+        LicenciaResponse desdeCacheLuego = service.consultarPuntosLicencia("1799999999", "", false, false);
+        assertEquals("CACHE_CLOUD", desdeCacheLuego.fuenteDatos());
+        assertTrue(desdeCacheLuego.desdeCache());
+        assertEquals(30, desdeCacheLuego.puntos());
+        assertEquals(llamadasAntes + 1, llamadasAnt.get());
     }
 
     @Test

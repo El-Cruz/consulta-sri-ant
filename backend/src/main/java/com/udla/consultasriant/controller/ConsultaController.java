@@ -64,10 +64,11 @@ public class ConsultaController {
     public LicenciaResponse consultarLicencia(
             @RequestParam String cedula,
             @RequestParam(required = false, defaultValue = "") String placa,
+            @RequestParam(required = false, defaultValue = "") String nombre,
             @RequestParam(required = false, defaultValue = "false") boolean forceRefresh,
             @RequestParam(required = false, defaultValue = "false") boolean simularFalloAnt
     ) {
-        return antService.consultarPuntosLicencia(cedula, placa, forceRefresh, simularFalloAnt);
+        return antService.consultarPuntosLicencia(cedula, placa, nombre, forceRefresh, simularFalloAnt);
     }
 
     @PostMapping("/consulta/licencia/cache")

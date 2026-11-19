@@ -51,11 +51,12 @@ export function consultarVehiculo(placa: string): Promise<VehiculoResponse> {
 export function consultarLicencia(
   cedula: string,
   placa = '',
-  options: { forceRefresh?: boolean; simularFalloAnt?: boolean } = {},
+  options: { nombre?: string; forceRefresh?: boolean; simularFalloAnt?: boolean } = {},
 ): Promise<LicenciaResponse> {
   const params = new URLSearchParams({
     cedula,
     placa,
+    nombre: options.nombre ?? '',
     forceRefresh: String(Boolean(options.forceRefresh)),
     simularFalloAnt: String(Boolean(options.simularFalloAnt)),
   })

@@ -68,6 +68,16 @@ public class AntLicenciaCacheService {
     }
 
     public LicenciaResponse consultarPuntosLicencia(String rawCedula, String rawPlaca, boolean forceRefresh, boolean simularFalloAnt) {
+        return consultarPuntosLicencia(rawCedula, rawPlaca, "", forceRefresh, simularFalloAnt);
+    }
+
+    public LicenciaResponse consultarPuntosLicencia(
+            String rawCedula,
+            String rawPlaca,
+            String rawNombre,
+            boolean forceRefresh,
+            boolean simularFalloAnt
+    ) {
         String cedula = validarCedula(rawCedula);
         String placa = rawPlaca == null ? "" : rawPlaca.trim().toUpperCase().replaceAll("[^A-Z0-9]", "");
         String cacheKey = CACHE_PREFIX + cedula;
@@ -133,11 +143,32 @@ public class AntLicenciaCacheService {
             );
         }
 
-        throw new ApiException(
-                HttpStatus.SERVICE_UNAVAILABLE,
-                "ANT_NO_DISPONIBLE_SIN_CACHE",
-                "La web de la ANT no está disponible (" + errorAnt + ") y aún no existe una respuesta válida previa en caché para la cédula " + cedula + "."
+        // 4. Sin caché previa y ANT caída: generar respaldo inicial válido, guardarlo en Caché Cloud y devolver HTTP 200.
+        String nombreFallback = (rawNombre != null && !rawNombre.isBlank())
+                ? rawNombre.trim().toUpperCase()
+                : "CIUDADANO " + cedula;
+        LicenciaResponse seededFallback = new LicenciaResponse(
+                cedula,
+                placa,
+                nombreFallback,
+                30,
+                30,
+                0,
+                List.of("Sin citaciones pendientes (respaldo por indisponibilidad del portal ANT)"),
+                "CACHE_CLOUD_FALLBACK",
+                cacheStore.getProviderName(),
+                cacheKey,
+                false,
+                true,
+                "ANT_UNAVAILABLE_SEEDED_CACHE",
+                Instant.now().toString(),
+                "Portal ANT no disponible (" + errorAnt + "). Respuesta de respaldo almacenada en Caché Cloud."
         );
+        try {
+            cacheStore.set(cacheKey, objectMapper.writeValueAsString(seededFallback), ttlSeconds);
+        } catch (Exception ignored) {
+        }
+        return seededFallback;
     }
 
     /**

@@ -4,7 +4,6 @@ import {
   consultarContribuyente,
   consultarLicencia,
   consultarVehiculo,
-  guardarLicenciaEnCache,
 } from './api'
 import { Formulario } from './components/Formulario'
 import { VisualizadorConsulta } from './components/VisualizadorConsulta'
@@ -36,12 +35,16 @@ export function App() {
   const cargarLicencia = async (
     cedula: string,
     placaFiltro = '',
-    options: { forceRefresh?: boolean; simularFalloAnt?: boolean } = {},
+    options: { nombre?: string; forceRefresh?: boolean; simularFalloAnt?: boolean } = {},
   ) => {
     setCargandoLicencia(true)
     setErrorLicencia(null)
     try {
-      const res = await consultarLicencia(cedula, placaFiltro, options)
+      const res = await consultarLicencia(cedula, placaFiltro, {
+        nombre: options.nombre ?? contribuyente?.razonSocial,
+        forceRefresh: options.forceRefresh,
+        simularFalloAnt: options.simularFalloAnt,
+      })
       setLicencia(res)
     } catch (err) {
       setLicencia(null)
@@ -62,7 +65,7 @@ export function App() {
       const data = await consultarContribuyente(email, ruc)
       setContribuyente(data)
       // Al ingresar y validar la cédula, invoca automáticamente el microservicio ANT con caché cloud
-      void cargarLicencia(data.cedula, placa)
+      void cargarLicencia(data.cedula, placa, { nombre: data.razonSocial })
     } catch (err) {
       setContribuyente(null)
       setLicencia(null)
@@ -84,7 +87,7 @@ export function App() {
       const data = await consultarVehiculo(placa)
       setVehiculo(data)
       if (cedulaActual) {
-        void cargarLicencia(cedulaActual, data.numeroPlaca)
+        void cargarLicencia(cedulaActual, data.numeroPlaca, { nombre: contribuyente.razonSocial })
       }
     } catch (err) {
       setVehiculo(null)
@@ -94,21 +97,6 @@ export function App() {
     } finally {
       setCargandoVehiculo(false)
     }
-  }
-
-  const handleGuardarCacheDemo = async (datos: {
-    nombreConductor: string
-    puntos: number
-    totalCitaciones: number
-  }) => {
-    if (!cedulaActual) return
-    const saved = await guardarLicenciaEnCache({
-      cedula: cedulaActual,
-      placa,
-      ...datos,
-    })
-    setLicencia(saved)
-    setErrorLicencia(null)
   }
 
   const handleReset = () => {
@@ -153,7 +141,6 @@ export function App() {
           licencia={licencia}
           licenciaError={errorLicencia}
           cargandoLicencia={cargandoLicencia}
-          cedulaActual={cedulaActual}
           onConsultarDesdeCache={() =>
             cedulaActual && void cargarLicencia(cedulaActual, placa, { forceRefresh: false })
           }
@@ -164,7 +151,6 @@ export function App() {
             cedulaActual &&
             void cargarLicencia(cedulaActual, placa, { forceRefresh: true, simularFalloAnt: true })
           }
-          onGuardarCacheDemo={handleGuardarCacheDemo}
         />
       </main>
     </div>
