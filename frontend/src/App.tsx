@@ -1,17 +1,15 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import {
   ApiError,
   consultarContribuyente,
   consultarLicencia,
   consultarVehiculo,
-  getHealth,
   guardarLicenciaEnCache,
 } from './api'
 import { Formulario } from './components/Formulario'
 import { VisualizadorConsulta } from './components/VisualizadorConsulta'
 import type {
   ContribuyenteResponse,
-  HealthResponse,
   LicenciaResponse,
   VehiculoResponse,
 } from './types'
@@ -21,7 +19,6 @@ export function App() {
   const [ruc, setRuc] = useState('')
   const [placa, setPlaca] = useState('')
 
-  const [health, setHealth] = useState<HealthResponse | null>(null)
   const [contribuyente, setContribuyente] = useState<ContribuyenteResponse | null>(null)
   const [vehiculo, setVehiculo] = useState<VehiculoResponse | null>(null)
   const [licencia, setLicencia] = useState<LicenciaResponse | null>(null)
@@ -33,12 +30,6 @@ export function App() {
   const [errorContribuyente, setErrorContribuyente] = useState<string | null>(null)
   const [errorVehiculo, setErrorVehiculo] = useState<string | null>(null)
   const [errorLicencia, setErrorLicencia] = useState<string | null>(null)
-
-  useEffect(() => {
-    getHealth()
-      .then(setHealth)
-      .catch(() => setHealth(null))
-  }, [])
 
   const cedulaActual = contribuyente?.cedula || (ruc.length >= 10 ? ruc.slice(0, 10) : '')
 
@@ -135,15 +126,6 @@ export function App() {
       <header className="topbar">
         <div>
           <h1>Sistema de Consulta SRI y ANT</h1>
-          <p>ISWZ2202 · Diseño y Arquitectura de Software · React + Java Spring Boot + Upstash Redis</p>
-        </div>
-        <div className="cloud-pill" title="Estado de la Caché Cloud en Upstash Redis">
-          <span className={`dot ${health?.upstashCloudConnected ? 'up' : 'down'}`} />
-          <span>
-            {health
-              ? `${health.cacheProvider} (${health.upstashCloudConnected ? 'Conectado' : 'Modo local'})`
-              : 'Backend Java desconectado'}
-          </span>
         </div>
       </header>
 

@@ -48,17 +48,16 @@ export function VisualizadorConsulta({
   }
 
   const getBadgeStyle = (fuente: string) => {
-    if (fuente === 'ANT_ONLINE') return { className: 'badge-online', label: 'ANT EN VIVO (GUARDADO EN CACHÉ)' }
-    if (fuente === 'CACHE_CLOUD') return { className: 'badge-cache', label: 'CACHÉ CLOUD · UPSTASH REDIS' }
-    if (fuente === 'CACHE_CLOUD_FALLBACK') return { className: 'badge-fallback', label: 'RESPALDO CACHÉ (ANT CAÍDA)' }
+    if (fuente === 'ANT_ONLINE') return { className: 'badge-online', label: 'ANT EN VIVO' }
+    if (fuente === 'CACHE_CLOUD') return { className: 'badge-cache', label: 'DESDE CACHÉ' }
+    if (fuente === 'CACHE_CLOUD_FALLBACK') return { className: 'badge-fallback', label: 'RESPALDO CACHÉ' }
     return { className: 'badge-cache', label: fuente }
   }
 
   return (
     <section className="panel panel-results" aria-label="Visualizador de resultados">
       <div className="panel-header">
-        <span className="step-pill">Componente: Visualizador de Consulta</span>
-        <h2>Resultados en Tiempo Real</h2>
+        <h2>Resultados</h2>
       </div>
 
       {!contribuyente && !vehiculo && !licencia && !licenciaError && (
@@ -66,8 +65,7 @@ export function VisualizadorConsulta({
           <div className="empty-icon" aria-hidden="true">SRI + ANT</div>
           <h3>Esperando consulta</h3>
           <p>
-            Ingresa tu correo y un RUC o cédula de persona natural en el formulario para ver la validación del SRI,
-            los puntos de licencia de la ANT y el estado de la Caché Cloud en Upstash Redis.
+            Ingresa un correo y RUC o cédula de persona natural para iniciar la consulta.
           </p>
         </div>
       )}
@@ -120,12 +118,12 @@ export function VisualizadorConsulta({
         </article>
       )}
 
-      {/* Tarjeta Puntos de Licencia ANT + Caché Cloud */}
+      {/* Tarjeta Puntos de Licencia ANT */}
       {(licencia || licenciaError || cargandoLicencia) && (
         <article className="result-card card-ant">
           <div className="card-header">
             <div>
-              <span className="source-chip chip-ant">ANT · Cache-Aside + Fallback</span>
+              <span className="source-chip chip-ant">ANT Licencia</span>
               <h3>Puntos de Licencia</h3>
             </div>
             {licencia && (
@@ -135,7 +133,7 @@ export function VisualizadorConsulta({
             )}
           </div>
 
-          {cargandoLicencia && <p className="muted">Consultando puntos de licencia ANT / Upstash Redis...</p>}
+          {cargandoLicencia && <p className="muted">Consultando puntos de licencia ANT...</p>}
 
           {licencia && (
             <>
@@ -146,9 +144,7 @@ export function VisualizadorConsulta({
                 </div>
                 <div className="points-meta">
                   <p className="driver-name">{licencia.nombreConductor}</p>
-                  <p className="muted">{licencia.mensajeDetalle}</p>
                   <div className="cache-tags">
-                    <span className="mono">Clave: {licencia.cacheKey}</span>
                     <span>Citaciones: {licencia.totalCitaciones}</span>
                     <span>Obtenido: {new Date(licencia.obtenidoEn).toLocaleString()}</span>
                   </div>
@@ -168,7 +164,7 @@ export function VisualizadorConsulta({
                   onClick={onSimularCaidaAnt}
                   disabled={cargandoLicencia}
                 >
-                  Simular caída ANT (Probar Fallback)
+                  Simular caída ANT
                 </button>
               </div>
             </>
@@ -183,9 +179,7 @@ export function VisualizadorConsulta({
               {cedulaActual && (
                 <form onSubmit={handleSeedSubmit} className="seed-form">
                   <p className="muted">
-                    Como el portal web de la ANT está caído ahora mismo y aún no existe un registro previo en
-                    Upstash Redis para <code>{cedulaActual}</code>, puedes registrar una respuesta válida inicial en la
-                    Caché Cloud para demostrar el patrón de recuperación:
+                    Registrar respuesta válida en caché para <code>{cedulaActual}</code>:
                   </p>
                   <div className="seed-inputs">
                     <label>
@@ -209,7 +203,7 @@ export function VisualizadorConsulta({
                       />
                     </label>
                     <button type="submit" className="btn btn-primary btn-sm" disabled={guardandoSeed}>
-                      {guardandoSeed ? 'Guardando...' : 'Guardar en Upstash Redis'}
+                      {guardandoSeed ? 'Guardando...' : 'Guardar en Caché'}
                     </button>
                   </div>
                 </form>

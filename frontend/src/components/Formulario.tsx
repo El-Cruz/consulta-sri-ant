@@ -40,12 +40,7 @@ export function Formulario({
   return (
     <section className="panel panel-form" aria-label="Formulario de consulta">
       <div className="panel-header">
-        <span className="step-pill">Componente: Formulario</span>
         <h2>Consulta Ciudadana SRI &amp; ANT</h2>
-        <p className="muted">
-          Verifica identidad en el SRI como persona natural, consulta los puntos de licencia en la ANT
-          (protegido con Caché Cloud) y obtiene los datos de tu vehículo.
-        </p>
       </div>
 
       {/* Paso 1: Correo + RUC/Cédula */}
@@ -54,7 +49,6 @@ export function Formulario({
           <span className={`step-badge ${contribuyenteVerificado ? 'done' : 'active'}`}>1</span>
           <div>
             <h3>Contribuyente y Licencia</h3>
-            <small>Correo electrónico y RUC (o cédula de 10 dígitos) de Persona Natural</small>
           </div>
         </div>
 
@@ -82,9 +76,6 @@ export function Formulario({
             value={ruc}
             onChange={(e) => onRucChange(e.target.value.replace(/[^\d]/g, ''))}
           />
-          <span className="field-hint">
-            Si ingresas 10 dígitos se valida automáticamente el RUC terminado en 001 y se consultan tus puntos ANT.
-          </span>
         </div>
 
         {errorContribuyente && (
