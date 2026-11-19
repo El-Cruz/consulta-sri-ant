@@ -1,0 +1,20 @@
+# Environment secrets (never commit!)
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+
+# Java / Maven
+backend/target/
+*.log
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store

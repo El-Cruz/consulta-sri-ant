@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: consulta-sri-ant-backend
+
+app:
+  sri:
+    existe-ruc-url: https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/existePorNumeroRuc
+    obtener-ruc-url: https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/obtenerPorNumerosRuc
+    vehiculo-url: https://srienlinea.sri.gob.ec/sri-matriculacion-vehicular-recaudacion-servicio-internet/rest/BaseVehiculo/obtenerPorNumeroPlacaOPorNumeroCampvOPorNumeroCpn
+    timeout-seconds: 10
+  ant:
+    citaciones-url: https://consultaweb.ant.gob.ec/PortalWEB/paginas/clientes/clp_grid_citaciones.jsp
+    timeout-seconds: 6
+  cache:
+    upstash-rest-url: ${UPSTASH_REDIS_REST_URL:}
+    upstash-rest-token: ${UPSTASH_REDIS_REST_TOKEN:}
+    fresh-seconds: 3600
+    ttl-seconds: 604800

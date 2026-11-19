@@ -1,0 +1,10 @@
+{
+  "name": "consulta-sri-ant",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema de Consulta SRI y ANT con C4, React, Java Spring Boot y Upstash Redis Cloud Cache",
+  "type": "module",
+  "dependencies": {
+    "@upstash/redis": "^1.41.0"
+  }
+}
